@@ -10,11 +10,14 @@ sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
+	maven { url 'https://repo.spring.io/milestone' }
+	maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.data:spring-data-keyvalue:2.5.4'
+	implementation 'org.springframework.boot:spring-boot-starter-web:2.5.5'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.5'
 }
 
 test {
