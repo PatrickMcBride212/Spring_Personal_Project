@@ -18,7 +18,7 @@ public class ItemController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<Item>> findAll() {
         List<Item> items = service.findAll();
         return ResponseEntity.ok().body(items);
