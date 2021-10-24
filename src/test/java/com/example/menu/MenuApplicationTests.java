@@ -1,9 +1,7 @@
 package com.example.menu;
 
-import com.example.menu.item.Item;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,12 +17,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.hamcrest.Matchers.is;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,7 +28,7 @@ class MenuApplicationTests {
 	@Autowired
 	private MockMvc mvc;
 
-	private ObjectMapper mapper = new ObjectMapper();
+	//private ObjectMapper mapper = new ObjectMapper();
 
 	@Test
 	void contextLoads() {
@@ -95,6 +91,7 @@ class MenuApplicationTests {
 	public void testAddAndRetrieveItem() throws Exception {
 		//create Item objects for a few new menu items
 		String salad = getJSON("src/test/resources/itemToAdd.json");
+		JSONObject reference = new JSONObject(salad);
 		RequestBuilder request = post("/api/menu/items")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(salad);
@@ -105,7 +102,26 @@ class MenuApplicationTests {
 		String contentAsString = result.getResponse().getContentAsString();
 
 		JSONObject object = new JSONObject(contentAsString);
-		System.out.printf("Name: %s\n", object.getString("name"));
+
+		String name = object.getString("name");
+		String referenceName = reference.getString("name");
+
+		//assigned ID does not need to match, just collecting for retrieval purposes at a later time
+		Long id = object.getLong("id");
+
+		Long price = object.getLong("price");
+		Long referencePrice = reference.getLong("price");
+
+		String description = object.getString("description");
+		String referenceDescription = reference.getString("description");
+
+		String image = object.getString("image");
+		String referenceImage = reference.getString("image");
+
+		Assertions.assertEquals(referenceName, name);
+		Assertions.assertEquals(referencePrice, price);
+		Assertions.assertEquals(referenceDescription, description);
+		Assertions.assertEquals(referenceImage, image);
 	}
 
 }
