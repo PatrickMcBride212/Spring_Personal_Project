@@ -96,16 +96,15 @@ class MenuApplicationTests {
 		RequestBuilder request = post("/api/menu/items")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(salad);
-		System.out.println("Request Results:");
+
 		ResultActions resultActions = this.mvc.perform(request).andExpect(status().is2xxSuccessful())
 				.andDo(print());
-		/*
+
 		MvcResult result = resultActions.andReturn();
 		String contentAsString = result.getResponse().getContentAsString();
 		Item item = mapper.readValue(contentAsString, Item.class);
 		System.out.println(item.getName());
 
-		 */
 	}
 
 }
