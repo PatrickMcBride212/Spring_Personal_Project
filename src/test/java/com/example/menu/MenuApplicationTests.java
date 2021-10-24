@@ -8,7 +8,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.hamcrest.Matchers.is;
 
@@ -24,10 +30,15 @@ class MenuApplicationTests {
 	@Autowired
 	private MockMvc mvc;
 
-	ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper = new ObjectMapper();
 
 	@Test
 	void contextLoads() {
+	}
+
+	public String getJSON(String path) throws Exception {
+		Path paths = Paths.get(path);
+		return new String(Files.readAllBytes(paths));
 	}
 
 	@Test
@@ -79,15 +90,22 @@ class MenuApplicationTests {
 	}
 
 	@Test
-	public void testAddItem() throws Exception {
+	public void testAddAndRetrieveItem() throws Exception {
 		//create Item objects for a few new menu items
-		Item salad = new Item(4L, "Salad", 499L, "Fresh", "https://images.ctfassets.net/23aumh6u8s0i/5pnNAeu0kev0P5Neh9W0jj/5b62440be149d0c1a9cb84a255662205/whatabyte_salad-sm.png");
-
+		String salad = getJSON("src/test/resources/itemToAdd.json");
 		RequestBuilder request = post("/api/menu/items")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(String.valueOf(salad));
+				.content(salad);
 		System.out.println("Request Results:");
-		this.mvc.perform(request).andDo(print());
+		ResultActions resultActions = this.mvc.perform(request).andExpect(status().is2xxSuccessful())
+				.andDo(print());
+		/*
+		MvcResult result = resultActions.andReturn();
+		String contentAsString = result.getResponse().getContentAsString();
+		Item item = mapper.readValue(contentAsString, Item.class);
+		System.out.println(item.getName());
+
+		 */
 	}
 
 }
