@@ -30,14 +30,14 @@ public class ItemController {
         return ResponseEntity.of(item);
     }
 
-    @PostMapping
+    @PostMapping("")
     public ResponseEntity<Item> create(@RequestBody Item item) {
         Item created = service.create(item);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(location).body(created);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<Item> update(@PathVariable("id") Long id, @RequestBody Item updatedItem) {
         Optional<Item> updated = service.update(id, updatedItem);
         return updated.map(value -> ResponseEntity.ok().body(value))
@@ -51,7 +51,7 @@ public class ItemController {
                 });
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<Item> delete(@PathVariable("id") Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
