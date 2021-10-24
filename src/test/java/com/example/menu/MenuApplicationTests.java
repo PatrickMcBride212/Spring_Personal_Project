@@ -2,6 +2,8 @@ package com.example.menu;
 
 import com.example.menu.item.Item;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -97,14 +99,13 @@ class MenuApplicationTests {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(salad);
 
-		ResultActions resultActions = this.mvc.perform(request).andExpect(status().is2xxSuccessful())
-				.andDo(print());
+		ResultActions resultActions = this.mvc.perform(request).andExpect(status().is2xxSuccessful());
 
 		MvcResult result = resultActions.andReturn();
 		String contentAsString = result.getResponse().getContentAsString();
-		Item item = mapper.readValue(contentAsString, Item.class);
-		System.out.println(item.getName());
 
+		JSONObject object = new JSONObject(contentAsString);
+		System.out.printf("Name: %s\n", object.getString("name"));
 	}
 
 }
