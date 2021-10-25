@@ -124,4 +124,8 @@ class MenuApplicationTests {
 		Assertions.assertEquals(referenceImage, image);
 	}
 
+	@Test
+	public void invalidItemTest() {
+
+	}
 }

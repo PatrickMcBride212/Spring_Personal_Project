@@ -9,6 +9,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("api/menu/items")
 public class ItemController {
@@ -31,14 +33,14 @@ public class ItemController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Item> create(@RequestBody Item item) {
+    public ResponseEntity<Item> create(@Valid @RequestBody Item item) {
         Item created = service.create(item);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(location).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Item> update(@PathVariable("id") Long id, @RequestBody Item updatedItem) {
+    public ResponseEntity<Item> update(@PathVariable("id") Long id, @Valid @RequestBody Item updatedItem) {
         Optional<Item> updated = service.update(id, updatedItem);
         return updated.map(value -> ResponseEntity.ok().body(value))
                 .orElseGet(() -> {
