@@ -2,6 +2,7 @@ package com.example.menu;
 
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,6 +20,7 @@ import java.nio.file.Paths;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+//import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,6 +42,7 @@ class MenuApplicationTests {
 	}
 
 	@Test
+	@Order(1)
 	public void testGetAllOnBaseRepository() throws Exception {
 		this.mvc.perform(get("/api/menu/items"))
 				.andExpect(status().isOk())
@@ -60,6 +63,7 @@ class MenuApplicationTests {
 	}
 
 	@Test
+	@Order(2)
 	public void testGetSpecificItemOnBaseRepository() throws Exception {
 		//get burger
 		this.mvc.perform(get("/api/menu/items/1"))
@@ -88,6 +92,7 @@ class MenuApplicationTests {
 	}
 
 	@Test
+	@Order(3)
 	public void testAddAndRetrieveItem() throws Exception {
 		//create Item objects for a few new menu items
 		String salad = getJSON("src/test/resources/itemToAdd.json");
@@ -107,7 +112,7 @@ class MenuApplicationTests {
 		String referenceName = reference.getString("name");
 
 		//assigned ID does not need to match, just collecting for retrieval purposes at a later time
-		Long id = object.getLong("id");
+		//Long id = object.getLong("id");
 
 		Long price = object.getLong("price");
 		Long referencePrice = reference.getLong("price");
@@ -125,7 +130,23 @@ class MenuApplicationTests {
 	}
 
 	@Test
-	public void invalidItemTest() {
+	@Order(4)
+	public void invalidRequestTest() throws Exception {
+		String invalidItem = getJSON("src/test/resources/invalidItemToAdd.json");
+		RequestBuilder request = post("/api/menu/items")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(invalidItem);
+		ResultActions resultActions = this.mvc.perform(request)
+				//.andDo(print())
+				.andExpect(status().isBadRequest());
 
+		MvcResult result = resultActions.andReturn();
+		String contentAsString = result.getResponse().getContentAsString();
+
+		JSONObject object = new JSONObject(contentAsString);
+
+		String name = object.getString("name");
+
+		Assertions.assertEquals("name must be a string", name);
 	}
 }
